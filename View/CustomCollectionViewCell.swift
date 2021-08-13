@@ -27,20 +27,20 @@ class CustomCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        loadingIndicator.center = self.contentView.center
-        self.contentView.addSubview(loadingIndicator)
-        self.contentView.addSubview(imageView)
+        loadingIndicator.center = contentView.center
+        contentView.addSubview(loadingIndicator)
+        contentView.addSubview(imageView)
         NSLayoutConstraint.activate([
             imageView.topAnchor
-                .constraint(equalTo: self.contentView.topAnchor),
+                .constraint(equalTo: contentView.topAnchor),
             imageView.leftAnchor
-                .constraint(equalTo: self.contentView.leftAnchor),
+                .constraint(equalTo: contentView.leftAnchor),
             imageView.rightAnchor
-                .constraint(equalTo: self.contentView.rightAnchor),
+                .constraint(equalTo: contentView.rightAnchor),
             imageView.bottomAnchor
-                .constraint(equalTo: self.contentView.bottomAnchor)
+                .constraint(equalTo: contentView.bottomAnchor)
         ])
-        self.backgroundColor = .red
+        backgroundColor = .red
     }
     
     required init?(coder: NSCoder) {
@@ -49,6 +49,6 @@ class CustomCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.imageView.image = nil
+        imageView.image = nil
     }
 }
