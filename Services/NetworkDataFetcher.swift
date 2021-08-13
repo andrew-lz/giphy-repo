@@ -10,7 +10,7 @@ import Foundation
 
 class NetworkDataFetcher {
     private let networkService = NetworkService()
-    func fetchImages(urlString: String, response : @escaping (TrandResponse?) -> Void) {
+    func fetchImages(urlString: String, response: @escaping (TrandResponse?) -> Void) {
         networkService.request(urlString: urlString) { (result) in
             switch result {
             case .success(let data):
