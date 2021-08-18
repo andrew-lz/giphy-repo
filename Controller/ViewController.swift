@@ -10,16 +10,24 @@ import UIKit
 
 class ViewController: UICollectionViewController {
     
-    private let utilityQueue = DispatchQueue.global(qos: .utility)
     private let cache = NSCache<NSNumber, UIImage>()
-    private let trandResponseController: TrandResponseModelController = TrandResponseModelController()
+    private let imageDataManager: ImageDataManager
+    
+    init(dataManager: ImageDataManager) {
+        self.imageDataManager = dataManager
+        super.init(collectionViewLayout: CollectionViewLayout())
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.collectionView.register(CustomCollectionViewCell.self, forCellWithReuseIdentifier: CustomCollectionViewCell.identifier)
-        trandResponseController.update(quantityOfImages: 9, then: { _ in
+        imageDataManager.update { _ in
             self.collectionView!.reloadData()
-        })
+        }
     }
 }
 
@@ -31,7 +39,7 @@ extension ViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return trandResponseController.quantityOfModels()
+        return imageDataManager.quantityOfModels()
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -45,18 +53,14 @@ extension ViewController {
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? CustomCollectionViewCell else { return }
-        if cell.imageView.image == nil {
-            cell.loadingIndicator.startAnimating()
-        }
         let itemNumber = NSNumber(value: indexPath.item)
         if let cachedImage = self.cache.object(forKey: itemNumber) {
             print("Using a cached image for item: \(itemNumber)")
-            cell.imageView.image = cachedImage
+            cell.configure(with: cachedImage)
         } else {
-            trandResponseController.loadImageDataTask(index: indexPath.item, completion: { [weak self] (image) in
+            imageDataManager.loadImage(index: indexPath.item, completion: { [weak self] (image) in
                 guard let self = self, let image = image else { return }
-                cell.loadingIndicator.stopAnimating()
-                cell.imageView.image = image
+                cell.configure(with: image)
                 self.cache.setObject(image, forKey: itemNumber)
             })
         }
