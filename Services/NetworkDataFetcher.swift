@@ -12,12 +12,12 @@ import UIKit
 
 class NetworkDataFetcher {
     private let networkService = NetworkService()
-    func fetchImages(urlString: String, response: @escaping (TrandResponse?) -> Void) {
+    func fetchImages(urlString: String, response: @escaping (GiphyAPIResponse?) -> Void) {
         networkService.request(urlString: urlString) { (result) in
             switch result {
             case .success(let data):
                 do {
-                    let images = try JSONDecoder().decode(TrandResponse.self, from: data)
+                    let images = try JSONDecoder().decode(GiphyAPIResponse.self, from: data)
                     response(images)
                 } catch let jsonError {
                     print("Failed to decode JSON", jsonError)
@@ -29,11 +29,11 @@ class NetworkDataFetcher {
         }
     }
     
-    func loadImagesInfo(quantityOfImages: Int, then handler: @escaping (TrandResponse) -> Void) {
+    func loadImagesPage(pageNumber: Int, quantityOfImages: Int, then handler: @escaping (GiphyAPIResponse) -> Void) {
         let networkDataFetcher = NetworkDataFetcher()
         let apiKey = "Y3ZdGlCifvM1LYlS92rI8V7PIHisF2Cq"
         let randomUUID = UUID().uuidString
-        let url: String = "https://api.giphy.com/v1/gifs/trending?api_key=\(apiKey)&limit=\(quantityOfImages)&rating=g&random_id=\(randomUUID)"
+        let url: String = "https://api.giphy.com/v1/gifs/trending?api_key=\(apiKey)&offset=\(pageNumber * quantityOfImages)&limit=\(quantityOfImages)&rating=g&random_id=\(randomUUID)"
         networkDataFetcher.fetchImages(urlString: url) { trandResponse in
             guard let trandResponse = trandResponse else { return }
             handler(trandResponse)

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct TrandResponse: Decodable {
+struct GiphyAPIResponse: Decodable {
     var data: [Info]
 }
 

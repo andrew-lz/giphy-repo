@@ -24,8 +24,8 @@ class ViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView.register(CustomCollectionViewCell.self, forCellWithReuseIdentifier: CustomCollectionViewCell.identifier)
-        imageDataManager.update { _ in
+        collectionView.register(CustomCollectionViewCell.self, forCellWithReuseIdentifier: CustomCollectionViewCell.identifier)
+        imageDataManager.initModelWithFirstPage { _ in
             self.collectionView!.reloadData()
         }
     }
@@ -44,15 +44,6 @@ extension ViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CustomCollectionViewCell.identifier, for: indexPath) as! CustomCollectionViewCell
-        return cell
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-extension ViewController {
-    
-    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? CustomCollectionViewCell else { return }
         let itemNumber = NSNumber(value: indexPath.item)
         if let cachedImage = self.cache.object(forKey: itemNumber) {
             print("Using a cached image for item: \(itemNumber)")
@@ -62,6 +53,20 @@ extension ViewController {
                 guard let self = self, let image = image else { return }
                 cell.configure(with: image)
                 self.cache.setObject(image, forKey: itemNumber)
+            })
+        }
+        return cell
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+extension ViewController {
+    
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if (indexPath.item == imageDataManager.quantityOfModels() - 1) {
+            let pageNumber: Int = imageDataManager.quantityOfModels() / 20 
+            imageDataManager.updateModelWithPage(pageNumber: pageNumber, handler: { _ in
+                self.collectionView!.reloadData()
             })
         }
     }

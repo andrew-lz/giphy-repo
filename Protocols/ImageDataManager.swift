@@ -11,7 +11,9 @@ import UIKit
 
 protocol ImageDataManager {
     
-    func update(handler: @escaping (Any) -> Void)
+    func initModelWithFirstPage(handler: @escaping (GiphyAPIResponse) -> Void)
+    func updateModelWithPage(pageNumber: Int, handler: @escaping (GiphyAPIResponse) -> Void)
+    func loadPage(pageNumber: Int, handler: @escaping (GiphyAPIResponse) -> Void)
     func quantityOfModels() -> Int
     func loadImage(index: Int, completion: @escaping (UIImage?) -> Void)
 }

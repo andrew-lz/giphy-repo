@@ -6,20 +6,32 @@
 //  Copyright © 2021 Zero. All rights reserved.
 //
 
-
 import Foundation
 import UIKit
 
 class TrandResponseManager: ImageDataManager {
     
-    private var trandResponse: TrandResponse?
+    private var trandResponse: GiphyAPIResponse?
     private let networkDataFetcher = NetworkDataFetcher()
     private let apiKey = "Y3ZdGlCifvM1LYlS92rI8V7PIHisF2Cq"
-    private let quantityOfImages = 20
+    private let quantityOfImagesOnPage = 20
     
-    func update(handler: @escaping (Any) -> Void) {
-        networkDataFetcher.loadImagesInfo(quantityOfImages: quantityOfImages) { trandResponse in
+    func loadPage(pageNumber: Int, handler: @escaping (GiphyAPIResponse) -> Void) {
+        networkDataFetcher.loadImagesPage(pageNumber: pageNumber, quantityOfImages: quantityOfImagesOnPage) { trandResponse in
+            handler(trandResponse)
+        }
+    }
+    
+    func initModelWithFirstPage(handler: @escaping (GiphyAPIResponse) -> Void) {
+        loadPage(pageNumber: 0) { trandResponse in
             self.trandResponse = trandResponse
+            handler(trandResponse)
+        }
+    }
+    
+    func updateModelWithPage(pageNumber: Int, handler: @escaping (GiphyAPIResponse) -> Void) {
+        loadPage(pageNumber: pageNumber) { trandResponse in
+            self.trandResponse?.data.append(contentsOf: trandResponse.data)
             handler(trandResponse)
         }
     }
