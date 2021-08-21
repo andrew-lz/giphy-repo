@@ -2,10 +2,9 @@
 //  AppDelegate.swift
 //  GiphyView
 //
-//  Created by BMF on 15.07.21.
+//  Created by BMF on 20.08.21.
 //  Copyright © 2021 Zero. All rights reserved.
 //
-
 
 import UIKit
 
@@ -15,11 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let trandResponseManager = TrandResponseManager()
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = ViewController(dataManager: trandResponseManager)
+        let view = ViewController(collectionViewLayout: CollectionViewLayout())
+        view.imageDataPresenter = TrandResponsePresenter(view: view)
+        window?.rootViewController = view
         window?.makeKeyAndVisible()
         return true
     }
 }
-
