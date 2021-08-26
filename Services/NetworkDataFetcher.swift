@@ -6,13 +6,14 @@
 //  Copyright © 2021 Zero. All rights reserved.
 //
 
-
 import Foundation
 import UIKit
 
 class NetworkDataFetcher {
+    
     private let networkService = NetworkService()
-    func fetchImages(urlString: String, response: @escaping (GiphyAPIResponse?) -> Void) {
+    
+    private func fetchImages(urlString: String, response: @escaping (GiphyAPIResponse?) -> Void) {
         networkService.request(urlString: urlString) { (result) in
             switch result {
             case .success(let data):
@@ -29,35 +30,36 @@ class NetworkDataFetcher {
         }
     }
     
-    func loadImagesPage(pageNumber: Int, quantityOfImages: Int, then handler: @escaping (GiphyAPIResponse) -> Void) {
-        let networkDataFetcher = NetworkDataFetcher()
-        let apiKey = "Y3ZdGlCifvM1LYlS92rI8V7PIHisF2Cq"
+    private func trandUrl(pageNumber: Int) -> String {
+        let api_key = "Y3ZdGlCifvM1LYlS92rI8V7PIHisF2Cq"
+        let quantityOfImagesOnPage = 20
         let randomUUID = UUID().uuidString
-        let url: String = "https://api.giphy.com/v1/gifs/trending?api_key=\(apiKey)&offset=\(pageNumber * quantityOfImages)&limit=\(quantityOfImages)&rating=g&random_id=\(randomUUID)"
-        networkDataFetcher.fetchImages(urlString: url) { trandResponse in
-            guard let trandResponse = trandResponse else { return }
-            handler(trandResponse)
-        }
+        let queryParams: [String: String] = [
+            "api_key": String(api_key),
+            "offset": String(pageNumber * quantityOfImagesOnPage),
+            "limit": String(quantityOfImagesOnPage),
+            "rating": "g",
+            "random_id": String(randomUUID)
+        ]
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "api.giphy.com"
+        urlComponents.path = "/v1/gifs/trending"
+        urlComponents.setQueryItems(with: queryParams)
+        return urlComponents.url!.absoluteString
     }
     
-    func loadImageDataTask(stringUrl: String, completion: @escaping (UIImage?)-> Void) {
-        guard let url = URL(string: stringUrl) else { return }
-        URLSession.shared.dataTask(with: url) { (data, _, error) in
-            DispatchQueue.main.async {
-                if error != nil {
-                    print("Some error")
-                    completion(nil)
-                    return
-                }
-                guard let data = data else { return }
-                let image = UIImage.gifImageWithData(data)
-                completion(image)
-            }
-        }.resume()
+    func loadImagesPage(pageNumber: Int, then handler: @escaping ([Info]) -> Void) {
+        let url: String = trandUrl(pageNumber: pageNumber)
+        fetchImages(urlString: url) { trandResponse in
+            guard let trandResponse = trandResponse else { return }
+            handler(trandResponse.data)
+        }
     }
 }
 
 private class NetworkService {
+    
     func request(urlString: String, completion: @escaping (Result<Data, Error>) -> Void) {
         guard let url = URL(string: urlString) else { return }
         URLSession.shared.dataTask(with: url) { (data, _, error) in
@@ -71,5 +73,12 @@ private class NetworkService {
                 completion(.success(data))
             }
         }.resume()
+    }
+}
+
+extension URLComponents {
+    
+    mutating func setQueryItems(with parameters: [String: String]) {
+        self.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
     }
 }

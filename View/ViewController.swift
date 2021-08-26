@@ -10,18 +10,42 @@ import UIKit
 
 class ViewController: UICollectionViewController, ImageView {
     
-    var imageDataPresenter: ImageDataPresenter!
-
+    private let loadingIndicator: UIActivityIndicatorView = {
+        let loadingIndicator = UIActivityIndicatorView()
+        loadingIndicator.color = .cyan
+        loadingIndicator.style = .large
+        
+        return loadingIndicator
+    }()
+    private var viewModels = [ViewModel]()
+    private let quantityOfImagesOnPage = 20
+    
     func reloadData() {
         collectionView.reloadData()
+    }
+    
+    func loadingAnimation() {
+        loadingIndicator.frame =  view.bounds
+        loadingIndicator.center = view.center
+        view.mask = UIView(frame: self.view.frame)
+        view.mask?.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        view.addSubview(loadingIndicator)
+        loadingIndicator.startAnimating()
+    }
+    
+    func stopLoadingAnimation() {
+        loadingIndicator.stopAnimating()
+        loadingIndicator.removeFromSuperview()
+        view.mask = nil
+    }
+    
+    func configure(viewModels: [ViewModel]) {
+        self.viewModels.append(contentsOf: viewModels)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.register(CustomCollectionViewCell.self, forCellWithReuseIdentifier: CustomCollectionViewCell.identifier)
-        imageDataPresenter.initModelWithFirstPage { _ in
-            print("Loading page 1")
-        }
     }
 }
 
@@ -33,15 +57,12 @@ extension ViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageDataPresenter.quantityOfImages()
+        return viewModels.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CustomCollectionViewCell.identifier, for: indexPath) as! CustomCollectionViewCell
-        imageDataPresenter.setImage(index: indexPath.item, completion: { image in
-            guard let image = image else { return }
-            cell.configure(with: image)
-        })
+        cell.configure(with: viewModels[indexPath.item].image)
         return cell
     }
 }
@@ -50,8 +71,9 @@ extension ViewController {
 extension ViewController {
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        imageDataPresenter.updateModelWithPage(index: indexPath.item) { (_, pageNumber) in
-            print("Loading page \(pageNumber + 1)")
+        if (indexPath.item == (viewModels.count - 1)) {
+            let pageNumber = viewModels.count / quantityOfImagesOnPage
+            NotificationCenter.default.post(Notification(name: NSNotification.Name(rawValue: Notifications.didScrollToTheEnd.rawValue), object: pageNumber))
         }
     }
     

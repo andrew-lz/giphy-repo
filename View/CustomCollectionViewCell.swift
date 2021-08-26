@@ -12,12 +12,6 @@ import UIKit
 class CustomCollectionViewCell: UICollectionViewCell {
     
     static let identifier: String = "CustomCollectionViewCell"
-    private let loadingIndicator: UIActivityIndicatorView = {
-        let loadingIndicator = UIActivityIndicatorView()
-        loadingIndicator.hidesWhenStopped = true
-        loadingIndicator.color = .black
-        return loadingIndicator
-    }()
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -28,10 +22,7 @@ class CustomCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        loadingIndicator.center = contentView.center
-        contentView.addSubview(loadingIndicator)
         contentView.addSubview(imageView)
-        loadingIndicator.startAnimating()
         NSLayoutConstraint.activate([
             imageView.topAnchor
                 .constraint(equalTo: contentView.topAnchor),
@@ -51,7 +42,6 @@ class CustomCollectionViewCell: UICollectionViewCell {
     
     func configure(with image: UIImage) {
         imageView.image = image
-        loadingIndicator.stopAnimating()
     }
     
     override func prepareForReuse() {

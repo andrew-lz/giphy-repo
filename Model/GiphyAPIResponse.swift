@@ -9,17 +9,17 @@
 import Foundation
 
 struct GiphyAPIResponse: Decodable {
-    var data: [Info]
+    let data: [Info]
 }
 
 struct Info: Decodable {
-    var images: Image
+    let images: Image
 }
 
 struct Image: Decodable {
-    var original: Original
+    let original: Original
 }
 
 struct Original: Decodable {
-    var url: String
+    let url: String
 }

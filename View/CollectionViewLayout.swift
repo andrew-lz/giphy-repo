@@ -10,15 +10,15 @@ import Foundation
 import UIKit
 
 class CollectionViewLayout: UICollectionViewFlowLayout {
-
+    
     override init() {
         super.init()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func prepare() {
         super.prepare()
         if UIDevice.current.orientation.isPortrait {

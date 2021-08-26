@@ -11,10 +11,7 @@ import UIKit
 
 protocol ImageDataPresenter {
     init(view: ImageView)
-    
-    func initModelWithFirstPage(handler: @escaping (GiphyAPIResponse) -> Void)
-    func updateModelWithPage(index: Int, handler: @escaping (GiphyAPIResponse, Int) -> Void)
-    func loadPage(pageNumber: Int, handler: @escaping (GiphyAPIResponse) -> Void)
-    func quantityOfImages() -> Int
-    func setImage(index: Int, completion: @escaping (UIImage?) -> Void)
+
+    func loadPage(_ notification: Notification, handler: @escaping ([Any]) -> Void)
+    func didStart()
 }

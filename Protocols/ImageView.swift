@@ -7,7 +7,11 @@
 //
 
 import Foundation
+import UIKit
 
 protocol ImageView: AnyObject {
     func reloadData()
+    func configure(viewModels: [ViewModel])
+    func loadingAnimation()
+    func stopLoadingAnimation()
 }
