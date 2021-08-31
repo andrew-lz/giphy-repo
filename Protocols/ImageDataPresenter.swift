@@ -12,6 +12,6 @@ import UIKit
 protocol ImageDataPresenter {
     init(view: ImageView)
 
-    func loadPage(_ notification: Notification, handler: @escaping ([Any]) -> Void)
+    func loadPage(handler: @escaping ([Any]) -> Void)
     func didStart()
 }

@@ -13,13 +13,14 @@ class TrandResponsePresenter: ImageDataPresenter {
     
     private let view: ImageView
     private let networkDataFetcher = NetworkDataFetcher()
+    private var pageNumber = 0
     
     required init(view: ImageView) {
         self.view = view
         NotificationCenter.default.addObserver(forName: NSNotification.Name(Notifications.didScrollToTheEnd.rawValue), object: nil, queue: OperationQueue.current) { notification in
-            print("Loading page \(notification.object ?? 0)")
-            self.loadPage(notification) { _ in
-                print("Loaded page \(notification.object ?? 0)")
+            print("Loading page \(self.pageNumber)")
+            self.loadPage { _ in
+                print("Loaded page \(self.pageNumber - 1)")
             }
         }
     }
@@ -29,10 +30,10 @@ class TrandResponsePresenter: ImageDataPresenter {
             .removeObserver(self, name: NSNotification.Name(Notifications.didScrollToTheEnd.rawValue), object: nil)
     }
     
-    @objc func loadPage(_ notification: Notification, handler: @escaping ([Any]) -> Void) {
+    @objc func loadPage(handler: @escaping ([Any]) -> Void) {
         var viewModels = [ViewModel]()
         self.view.loadingAnimation()
-        networkDataFetcher.loadImagesPage(pageNumber: (notification.object as? Int) ?? 0) { imagesInfo in
+        networkDataFetcher.loadImagesPage(pageNumber: pageNumber) { imagesInfo in
             imagesInfo.forEach { imagesInfo in
                 viewModels.append(ViewModel(image: UIImage.gifImageWithURL(imagesInfo.images.original.url)!))
             }
@@ -41,10 +42,11 @@ class TrandResponsePresenter: ImageDataPresenter {
             self.view.reloadData()
             self.view.stopLoadingAnimation()
         }
+        pageNumber += 1
     }
     
     func didStart() {
-        loadPage(Notification(name: Notification.Name(rawValue: Notifications.didScrollToTheEnd.rawValue)), handler: { imagesInfo in
+        loadPage(handler: { imagesInfo in
             print("Loaded page 0")
         })
     }

@@ -18,7 +18,6 @@ class ViewController: UICollectionViewController, ImageView {
         return loadingIndicator
     }()
     private var viewModels = [ViewModel]()
-    private let quantityOfImagesOnPage = 20
     
     func reloadData() {
         collectionView.reloadData()
@@ -72,8 +71,7 @@ extension ViewController {
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if (indexPath.item == (viewModels.count - 1)) {
-            let pageNumber = viewModels.count / quantityOfImagesOnPage
-            NotificationCenter.default.post(Notification(name: NSNotification.Name(rawValue: Notifications.didScrollToTheEnd.rawValue), object: pageNumber))
+            NotificationCenter.default.post(Notification(name: NSNotification.Name(rawValue: Notifications.didScrollToTheEnd.rawValue), object: nil))
         }
     }
     

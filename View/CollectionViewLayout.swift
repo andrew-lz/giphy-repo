@@ -25,19 +25,19 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
             let widthHeightConstant = ((UIScreen.main.bounds.width - 2))
             self.itemSize = CGSize(width: widthHeightConstant,
                                    height: widthHeightConstant)
-            self.minimumInteritemSpacing = 1
-            self.minimumLineSpacing = 1
-            self.scrollDirection = .vertical
-            self.invalidateLayout()
+            minimumInteritemSpacing = 1
+            minimumLineSpacing = 1
+            scrollDirection = .vertical
+            invalidateLayout()
         } else if UIDevice.current.orientation.isLandscape {
             let widthConstant = UIScreen.main.bounds.width / 3 - 1
             let heightConstant = UIScreen.main.bounds.height / 2 - 2
-            self.itemSize = CGSize(width: widthConstant,
+            itemSize = CGSize(width: widthConstant,
                                    height: heightConstant)
-            self.minimumInteritemSpacing = 1
-            self.minimumLineSpacing = 1
-            self.scrollDirection = .vertical
-            self.invalidateLayout()
+            minimumInteritemSpacing = 1
+            minimumLineSpacing = 1
+            scrollDirection = .vertical
+            invalidateLayout()
         }
     }
 }
